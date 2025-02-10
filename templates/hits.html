@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hits</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        .high-hits {
+            background-color: red;
+        }
+        .medium-hits {
+            background-color: yellow;
+        }
+        .low-hits {
+            background-color: green;
+        }
+        th {
+            cursor: pointer;
+        }
+    </style>
+    <script>
+        // Function to sort table columns
+        function sortTable(n) {
+            var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+            table = document.getElementById("hitsTable");
+            switching = true;
+            dir = "asc";
+            while (switching) {
+                switching = false;
+                rows = table.rows;
+                for (i = 1; i < (rows.length - 1); i++) {
+                    shouldSwitch = false;
+                    x = rows[i].getElementsByTagName("TD")[n];
+                    y = rows[i + 1].getElementsByTagName("TD")[n];
+                    if (dir == "asc") {
+                        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    } else if (dir == "desc") {
+                        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                }
+                if (shouldSwitch) {
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                    switchcount++;
+                } else {
+                    if (switchcount == 0 && dir == "asc") {
+                        dir = "desc";
+                        switching = true;
+                    }
+                }
+            }
+        }
+
+        // Function to filter table rows
+        function filterTable() {
+            var input, filter, table, tr, td, i, j, txtValue;
+            input = document.getElementById("filterInput");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("hitsTable");
+            tr = table.getElementsByTagName("tr");
+            for (i = 1; i < tr.length; i++) {
+                tr[i].style.display = "none";
+                td = tr[i].getElementsByTagName("td");
+                for (j = 0; j < td.length; j++) {
+                    if (td[j]) {
+                        txtValue = td[j].textContent || td[j].innerText;
+                        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                            tr[i].style.display = "";
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Hits Data</h1>
+    <input type="text" id="filterInput" onkeyup="filterTable()" placeholder="Search for SSIDs or MACs..">
+    <table id="hitsTable">
+        <thead>
+            <tr>
+                <th onclick="sortTable(0)">Timestamp</th>
+                <th onclick="sortTable(1)">Identifier</th>
+                <th onclick="sortTable(2)">RSSI</th>
+                <th onclick="sortTable(3)">Distance</th>
+                <th onclick="sortTable(4)">UID</th>
+                <th onclick="sortTable(5)">Hits</th>
+                <th onclick="sortTable(6)">Scanning</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for hit in hits_data %}
+            <tr class="{% if hit[5] > 10 %}high-hits{% elif hit[5] > 2 %}medium-hits{% else %}low-hits{% endif %}">
+                <td>{{ hit[0] | datetimeformat }}</td>
+                <td><a href="{{ url_for('details', uid=hit[4]) }}">{{ hit[1] }}</a></td> <!-- Link to detailed page -->
+                <td>{{ hit[2] }}</td>
+                <td>{{ hit[3] }}</td>
+                <td><a href="{{ url_for('details', uid=hit[4]) }}">{{ hit[4] }}</a></td> <!-- Link to detailed page -->
+                <td>{{ hit[5] }}</td>
+                <td>{{ 'Yes' if hit[6] else 'No' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{{ url_for('dashboard') }}">Back to Dashboard</a>
+</body>
+</html>

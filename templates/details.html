@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Details</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <h1>Details for {{ uid }}</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Timestamp</th>
+                <th>Identifier</th>
+                <th>RSSI</th>
+                <th>Distance</th>
+                <th>Occurrences</th>
+                <th>MAC Address</th> <!-- New column for MAC addresses -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in details_data %}
+            <tr>
+                <td>{{ row[0] | datetimeformat }}</td>
+                <td>{{ row[1] }}</td>
+                <td>{{ row[2] }}</td>
+                <td>{{ row[3] }}</td>
+                <td>{{ row[4] }}</td>
+                <td>{{ uid }}</td> <!-- Display the MAC address -->
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <form action="{{ url_for('save_note') }}" method="post">
+        <input type="hidden" name="uid" value="{{ uid }}">
+        <textarea name="note" rows="4" cols="50"></textarea>
+        <br>
+        <button type="submit">Save Note</button>
+    </form>
+    <a href="{{ url_for('logout') }}">Logout</a>
+</body>
+</html>

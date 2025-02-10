@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Convoys</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        .high-hits {
+            background-color: red;
+        }
+        .medium-hits {
+            background-color: yellow;
+        }
+        .low-hits {
+            background-color: green;
+        }
+        th {
+            cursor: pointer;
+        }
+    </style>
+    <script>
+        function sortTable(n) {
+            var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+            table = document.getElementById("convoyTable");
+            switching = true;
+            dir = "asc";
+            while (switching) {
+                switching = false;
+                rows = table.rows;
+                for (i = 1; i < (rows.length - 1); i++) {
+                    shouldSwitch = false;
+                    x = rows[i].getElementsByTagName("TD")[n];
+                    y = rows[i + 1].getElementsByTagName("TD")[n];
+                    if (dir == "asc") {
+                        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    } else if (dir == "desc") {
+                        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                }
+                if (shouldSwitch) {
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                    switchcount++;
+                } else {
+                    if (switchcount == 0 && dir == "asc") {
+                        dir = "desc";
+                        switching = true;
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Convoy Data</h1>
+    <table id="convoyTable">
+        <thead>
+            <tr>
+                <th onclick="sortTable(0)">Timestamp</th>
+                <th onclick="sortTable(1)">Identifier</th>
+                <th onclick="sortTable(2)">RSSI</th>
+                <th onclick="sortTable(3)">Distance</th>
+                <th onclick="sortTable(4)">UID</th>
+                <th onclick="sortTable(5)">Hits</th>
+                <th onclick="sortTable(6)">Scanning</th> <!-- New column for scanning status -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in convoy_data %}
+            <tr class="{% if entry[5] > 10 %}high-hits{% elif entry[5] > 2 %}medium-hits{% else %}low-hits{% endif %}">
+                <td>{{ entry[0] | datetimeformat }}</td>
+                <td>{{ entry[1] }}</td>
+                <td>{{ entry[2] }}</td>
+                <td>{{ entry[3] }}</td>
+                <td>{{ entry[4] }}</td>
+                <td>{{ entry[5] }}</td>
+                <td>{{ 'Yes' if entry[6] else 'No' }}</td> <!-- Display scanning status -->
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{{ url_for('dashboard') }}">Back to Dashboard</a>
+</body>
+</html>

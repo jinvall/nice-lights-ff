@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <h1>Dashboard</h1>
+
+    <!-- Add the image to the dashboard -->
+    <div class="dashboard-image">
+        <img src="{{ url_for('static', filename='images/slutty_rabbit.png') }}" alt="Slutty Rabbit Productions" style="width:200px;height:auto;">
+    </div>
+
+    <!-- Add the contact information -->
+    <div class="contact-info">
+        <p>Contact: <a href="mailto:S.Rabbit.Prods@gmail.com">S.Rabbit.Prods@gmail.com</a></p>
+    </div>
+
+    <h2>Recent Hits</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Timestamp</th>
+                <th>Identifier</th>
+                <th>RSSI</th>
+                <th>Distance</th>
+                <th>UID</th>
+                <th>Hits</th>
+                <th>Scanning</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for hit in recent_hits %}
+            <tr>
+                <td>{{ hit.timestamp | datetimeformat }}</td>
+                <td>{{ hit.identifier }}</td>
+                <td>{{ hit.rssi }}</td>
+                <td>{{ hit.distance }}</td>
+                <td>{{ hit.uid }}</td>
+                <td>{{ hit.occurrences }}</td>
+                <td>{{ 'Yes' if hit.is_scanning else 'No' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{{ url_for('hits') }}">View All Hits</a>
+    <a href="{{ url_for('convoys') }}">View Convoys</a>
+    <a href="{{ url_for('logout') }}">Logout</a>
+</body>
+</html>
