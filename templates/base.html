@@ -8,6 +8,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+    <header>
+        <img src="{{ url_for('static', filename='images/new_image.svg') }}" alt="Global SVG Image" style="width:200px;height:auto;">
+    </header>
     <nav>
         <a href="{{ url_for('convoys') }}">Convoys</a>
         <a href="{{ url_for('hits') }}">Hits</a>

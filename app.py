@@ -28,7 +28,6 @@ login_manager.login_view = 'login'
 class User(UserMixin):
     pass
 
-# Load user callback
 @login_manager.user_loader
 def load_user(user_id):
     user = User()
@@ -57,10 +56,8 @@ def close_connection(exception):
 @app.template_filter('datetimeformat')
 def datetimeformat(value):
     try:
-        # Try to convert the value to an integer timestamp
         dt = datetime.fromtimestamp(int(value))
     except ValueError:
-        # If it fails, assume it's a string timestamp and parse it
         dt = datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
     return dt.strftime('%Y-%m-%d %H:%M:%S')
 
@@ -69,7 +66,6 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        # Insert user into the database (add your database logic here)
         db = get_db()
         cursor = db.cursor()
         cursor.execute('INSERT INTO users (username, password) VALUES (?, ?)', (username, password))
@@ -83,7 +79,6 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        # Check user credentials (add your database logic here)
         db = get_db()
         cursor = db.cursor()
         user = cursor.execute('SELECT * FROM users WHERE username = ? AND password = ?', (username, password)).fetchone()
@@ -109,7 +104,6 @@ def logout():
 def dashboard():
     db = get_db()
     cursor = db.cursor()
-    # Exclude sample data (assuming 'sample' keyword is used to identify samples)
     recent_hits_data = cursor.execute('''
         SELECT * FROM tracking_data
         WHERE identifier NOT LIKE '%sample%'
@@ -137,7 +131,6 @@ def dashboard():
 def convoys():
     db = get_db()
     cursor = db.cursor()
-    # Fetch convoy data (dynamic SSIDs/BSSIDs)
     convoy_data = cursor.execute('''
         SELECT timestamp, identifier, rssi, distance, uid, COUNT(*)
         FROM tracking_data
@@ -152,7 +145,6 @@ def convoys():
 def hits():
     db = get_db()
     cursor = db.cursor()
-    # Fetch all non-static hits data (dynamic SSIDs/BSSIDs)
     hits_data = cursor.execute('''
         SELECT timestamp, identifier, rssi, distance, uid, COUNT(*)
         FROM tracking_data
@@ -180,7 +172,6 @@ def details(uid):
 def save_note():
     note = request.form['note']
     uid = request.form['uid']
-    # Sanitize the filename by replacing invalid characters
     sanitized_uid = uid.replace(":", "_")
     note_file = f'notes_{sanitized_uid}.txt'
     with open(note_file, 'a') as f:
@@ -192,32 +183,25 @@ def save_note():
 def train_model():
     db = get_db()
     cursor = db.cursor()
-    # Fetch data for training
     data = cursor.execute('SELECT * FROM tracking_data').fetchall()
     df = pd.DataFrame(data, columns=['id', 'timestamp', 'identifier', 'rssi', 'distance', 'uid', 'data_type', 'occurrences'])
 
-    # Preprocess data
-    X = df[['timestamp', 'rssi', 'distance', 'occurrences']]  # Select relevant features
-    y = df['data_type']  # Assuming 'data_type' is the target variable
+    X = df[['timestamp', 'rssi', 'distance', 'occurrences']]
+    y = df['data_type']
 
-    # Split data into training and test sets
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-    # Normalize data
     scaler = StandardScaler()
     X_train = scaler.fit_transform(X_train)
     X_test = scaler.transform(X_test)
 
-    # Train KMeans model
-    kmeans = KMeans(n_clusters=3)  # Adjust the number of clusters as needed
+    kmeans = KMeans(n_clusters=3)
     kmeans.fit(X_train)
 
-    # Evaluate model
     y_pred = kmeans.predict(X_test)
     accuracy = accuracy_score(y_test, y_pred)
     logging.debug(f'Training accuracy: {accuracy}')
 
-    # Save the trained model and scaler
     joblib.dump(scaler, 'models/scaler.pkl')
     joblib.dump(kmeans, 'models/kmeans_model.pkl')
 

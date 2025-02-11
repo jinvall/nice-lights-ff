@@ -3,31 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <title>Welcome to Nice Lights FF</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-        header {
-            background-color: #333;
-            color: #fff;
-            padding: 20px;
-            text-align: center;
-        }
-        .content {
-            padding: 20px;
-        }
-    </style>
+    <link rel="stylesheet" href="static/css/styles.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="static/js/scripts.js"></script>
 </head>
 <body>
     <header>
         <h1>Welcome to Nice Lights FF</h1>
     </header>
+    <nav>
+        <a href="{{ url_for('convoys') }}">Convoys</a>
+        <a href="{{ url_for('hits') }}">Hits</a>
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </nav>
     <div class="content">
         <p>Welcome to the official site of Nice Lights FF.</p>
         <p>Stay tuned for more updates and exciting content!</p>
+        <img src="static/images/nice_lights_image.png" alt="Nice Lights Image" style="width:200px;height:auto;">
     </div>
 </body>
 </html>
