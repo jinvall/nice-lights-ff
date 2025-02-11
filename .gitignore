@@ -173,6 +173,9 @@ cython_debug/
 tracking_logger/tracking_debug.log
 tracking_debug.log
 
+# Ignore database file
+tracking_data.db
+
 # Exclude other files or directories as needed
 node_modules/
 .env
