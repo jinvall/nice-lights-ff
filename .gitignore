@@ -172,7 +172,8 @@ cython_debug/
 # Exclude log files
 tracking_logger/tracking_debug.log
 tracking_debug.log
-
+tracking_debug_backup.log
+tracking_logger\tracking_logger
 # Ignore database file
 tracking_data.db
 
