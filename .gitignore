@@ -169,3 +169,7 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# Exclude log files
+tracking_logger/tracking_debug.log
+tracking_debug.log
